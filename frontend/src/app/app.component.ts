@@ -1,5 +1,8 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { AuthService } from './auth.service';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
@@ -8,19 +11,27 @@ import { NgForm } from '@angular/forms';
 })
 export class AppComponent implements OnInit, OnDestroy{
   isLoading = false;
+  private authStatusSub: Subscription;
 
-  constructor() {}
+  constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
+      authStatus => {
+        this.isLoading = false;
+      }
+    );
+  }
 
   onLogin(form: NgForm) {
     if (form.invalid) {
       return;
     }
     this.isLoading = true;
-  }
-
-  ngOnInit() {
+    this.authService.login(form.value.email, form.value.password);
   }
 
   ngOnDestroy() {
+    this.authStatusSub.unsubscribe();
   }
 }
