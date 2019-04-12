@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
+import { PacienteComponent } from './paciente/paciente.component';
+import { InstituicaoComponent } from './instituicao/instituicao.component';
 
 const routes: Routes = [
   
@@ -14,7 +16,9 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PacienteComponent,
+    InstituicaoComponent
   ],
   imports: [
     RouterModule.forRoot(
