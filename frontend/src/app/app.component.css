@@ -1,7 +1,10 @@
 main {
-    margin-top: 1rem;
-    width: 30%;
+    width: 25%;
     margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
 :host {
@@ -12,6 +15,7 @@ main {
   mat-form-field,
   textarea {
     width: 100%;
+    text-align: center;
   }
   
   mat-spinner {
@@ -19,3 +23,8 @@ main {
   }
 
   h2 {text-align:center;}
+
+  button{
+    margin-right: 10px;
+    margin-left: 10px;
+  }
