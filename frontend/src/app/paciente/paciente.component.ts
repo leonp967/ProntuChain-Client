@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-paciente',
@@ -10,6 +11,9 @@ export class PacienteComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+  }
+
+  onQuery(form: NgForm) {
   }
 
 }

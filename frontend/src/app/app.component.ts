@@ -1,7 +1,5 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { AuthService } from './services/auth.service';
-import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -9,37 +7,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy{
-  isLoading = false;
-  private authStatusSub: Subscription;
+export class AppComponent implements OnInit{
 
-  constructor(public authService: AuthService) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
-      authStatus => {
-        this.isLoading = false;
-      }
-    );
-  }
-
-  onLogin(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-    this.isLoading = true;
-    this.authService.login(form.value.email, form.value.password);
-  }
-
-  onSignup(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-    this.isLoading = true;
-    this.authService.createUser(form.value.email, form.value.password);
-  }
-
-  ngOnDestroy() {
-    this.authStatusSub.unsubscribe();
   }
 }

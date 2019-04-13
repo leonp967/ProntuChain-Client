@@ -1,13 +1,3 @@
-main {
-    width: 100%;
-    color: black;
-  }
-
-:host {
-    display: block;
-    margin-top: 1rem;
-  }
-  
   mat-form-field,
   textarea {
     width: 100%;
@@ -16,6 +6,15 @@ main {
   
   mat-spinner {
     margin: auto;
+  }
+
+  mat-card {
+    width: 25%;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   h2 {text-align:center;}

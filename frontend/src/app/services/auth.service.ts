@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthData } from './auth-data.model';
+import { AuthData } from '../models/auth-data.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -65,7 +65,7 @@ export class AuthService {
           const now = new Date();
           const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
           this.saveAuthData(token, expirationDate, this.userId);
-          this.router.navigate(['/abc']);
+          this.router.navigate(['/paciente']);
         }
       }, error => {
         this.authStatusListener.next(false);
