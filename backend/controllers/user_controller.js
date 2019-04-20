@@ -1,61 +1,57 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user_model.js');
+var Request = require('request');
+const { ipcRenderer } = require('electron');
 
-exports.createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
-    .then(hash => {
-      const user = new User({
-        email: req.body.email,
-        password: hash
-      });
-      user.save()
-        .then(result => {
-          res.status(201).json({
-            message: 'User Created!',
-            result: result
-          });
-        })
-        .catch(err => {
-          res.status(500).json({
-            message: 'Invalid authentication credentials!'
-          });
-        });
-    });
+var userEmail;
+var userName;
+var userCpf;
+
+exports.getEmail = function(){
+  return userEmail;
 }
 
-exports.userLogin = (req, res, next) => {
-  let fetchedUser;
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (!user) {
-        return res.status(401).json({
-          message: 'Auth failed'
-        });
-      }
-      fetchedUser = user;
-      return bcrypt.compare(req.body.password, user.password);
+exports.getName = function(){
+  return userName;
+}
+
+exports.getCpf = function(){
+  return userCpf;
+}
+
+exports.createUser = (email, password, cpf, nome) => {
+  Request.post({
+    "headers": { "content-type": "application/json" },
+    "url": "http://localhost:3000/signup",
+    "body": JSON.stringify({
+        "email": email,
+        "password": password,
+        "name": nome,
+        "cpf": cpf
     })
-    .then(result => {
-      if (!result) {
-        return res.status(401).json({
-          message: 'Auth failed'
-        });
+  }, (error, response, body) => {
+      if(error) {
+          return console.dir(error);
       }
-      const token = jwt.sign(
-        { email: fetchedUser.email, userId: fetchedUser._id },
-        process.env.JWT_KEY,
-        {expiresIn: '1h'}
-      );
-      res.status(200).json({
-        token: token,
-        expiresIn: 3600,
-        userId: fetchedUser._id
-      });
+      ipcRenderer.send('signup-finish', response.statusCode);
+  });
+}
+
+exports.userLogin = (email, password) => {
+  Request.post({
+    "headers": { "content-type": "application/json" },
+    "url": "http://localhost:3000/login",
+    "body": JSON.stringify({
+        "email": email,
+        "password": password
     })
-    .catch(err => {
-      return res.status(401).json({
-        message: 'Invalid authentication credentials!' + err
-      });
-    });
+  }, (error, response, body) => {
+      if(error) {
+          return console.dir(error);
+      }
+      if(response.statusCode == 201){
+        userEmail = body.email;
+        userName = body.name;
+        userCpf = body.cpf;
+      }
+      ipcRenderer.send('login-finish', response.statusCode);
+  });
 }

@@ -4,7 +4,7 @@ var fs = require("fs");
 var randomString = require("randomstring");
 
 const key = process.env.ENCRYPTION_KEY || "secret";
-const algorithm = process.env.ENCRYPTION_ALGORITHM || 'aes256';
+const algorithm = process.env.ENCRYPTION_ALGORITHM || 'aes-256-cbc';
 const inputEncoding = process.env.ENCRYPTION_INPUT_ENCODING || 'utf8';
 const outputEncoding = process.env.ENCRYPTION_OUTPUT_ENCODING || 'hex';
 const IV_LENGTH = 16;
@@ -13,7 +13,7 @@ var generateAESKey = function(){
     return randomString.generate();
 }
 
-var encryptAES = function(value, useKey = key) {
+var encryptAES = function(value, useKey) {
     let iv = crypto.randomBytes(IV_LENGTH);
     var cipher = crypto.createCipheriv(algorithm, Buffer.from(useKey), iv);
     var encrypted = cipher.update(value);
