@@ -7,18 +7,21 @@ const decryptRSA = require('../utils/crypto_utils').decryptStringWithRsaPrivateK
 const decryptAES = require('../utils/crypto_utils').decryptAES
 const path = require("path");
 const homedir = require('os').homedir();
+const UserController = require('./user_controller');
 
-var query = async function(email, cpf, dateFrom, dateTo){
+exports.queryResult = async function(type, dateFrom, dateTo){
     try{
-        const wallet = new FileSystemWallet('../identitys/leo/wallet');
+        const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
         const gateway = new Gateway();
+        var email = UserController.getEmail();
+        var cpf = UserController.getCpf();
 
         let connectionProfile = yaml.load(fs.readFileSync(path.join(__dirname, '../prontuchain-connection/config.yaml'), 'utf8'));
 
         let connectionOptions = {
-        identity: email,
-        wallet: wallet,
-        discovery: { enabled:false, asLocalhost: true }
+            identity: email,
+            wallet: wallet,
+            discovery: { enabled:false, asLocalhost: true }
         };
 
         await gateway.connect(connectionProfile, connectionOptions);
@@ -35,8 +38,4 @@ var query = async function(email, cpf, dateFrom, dateTo){
     } catch(error){
         console.log(`Error processing transaction. ${error}`);
     }
-}
-
-module.exports = {
-    queryResult: query
 }

@@ -1,9 +1,12 @@
 var Request = require('request');
 const { ipcRenderer } = require('electron');
+const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
+const path = require("path");
+const homedir = require('os').homedir();
 
-var userEmail;
-var userName;
-var userCpf;
+var userEmail = null;
+var userName = null;
+var userCpf = null;
 
 exports.getEmail = function(){
   return userEmail;
@@ -15,6 +18,12 @@ exports.getName = function(){
 
 exports.getCpf = function(){
   return userCpf;
+}
+
+function importToWallet(certificate, key, email){
+  const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
+  const identity = X509WalletMixin.createIdentity('Org1MSP', certificate, key);
+  wallet.import(email, identity);
 }
 
 exports.createUser = (email, password, cpf, nome) => {
@@ -31,6 +40,7 @@ exports.createUser = (email, password, cpf, nome) => {
       if(error) {
           return console.dir(error);
       }
+      importToWallet(body.certificate, body.key, email);
       ipcRenderer.send('signup-finish', response.statusCode);
   });
 }

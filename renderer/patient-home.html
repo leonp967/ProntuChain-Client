@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Patient Home</title>
+    <link rel="stylesheet" href="../node_modules/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+        <div class="container">
+        <div class="row">
+                <div class="form-inline">
+                        <label class="form-label" for="input-example-1">Tipo de Documento</label>
+                        <select class="form-select" id="picker-type" name="picker-type">
+                                <option value="1">Todos</option>
+                                <option value="2">Exame de sangue</option>
+                                <option value="3">Consulta</option>
+                        </select>
+                </div>
+
+                <div class="form-inline">
+                        <label class="form-label" for="date-from">De</label>
+                        <input type="date" id="date-from" name="date-from">
+                </div>
+
+                <div class="form-inline">
+                        <label class="form-label" for="date-to">Até</label>
+                        <input type="date" id="date-to" name="date-to">
+                </div>
+
+                <button id="query-btn" class="btn btn-primary">Pesquisar</button>
+        </div>
+        </div>
+    <script src="./patient-home.js"></script>
+  </body>
+
+</html>

@@ -17,3 +17,8 @@ body {
 .todo-item:hover {
   background: #d8d8d8
 }
+
+.form-inline{
+  margin-inline-end: 15px;
+  margin-inline-start: 10px;
+}

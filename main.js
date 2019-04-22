@@ -58,7 +58,7 @@ function main () {
   })
 
   ipcMain.on('login-finish', (event, response) => {
-    mainWindow.loadFile(path.join('renderer', 'add.html'));
+    mainWindow.loadFile(path.join('renderer', 'patient-home.html'));
   })
 
   // add-todo from add todo window
