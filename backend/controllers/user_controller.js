@@ -40,7 +40,8 @@ exports.createUser = (email, password, cpf, nome) => {
       if(error) {
           return console.dir(error);
       }
-      importToWallet(body.certificate, body.key, email);
+      const bodyJson = JSON.parse(body);
+      importToWallet(bodyJson.certificate, bodyJson.key, email);
       ipcRenderer.send('signup-finish', response.statusCode);
   });
 }
@@ -57,7 +58,7 @@ exports.userLogin = (email, password) => {
       if(error) {
           return console.dir(error);
       }
-      if(response.statusCode == 201){
+      if(response.statusCode == 200){
         userEmail = body.email;
         userName = body.name;
         userCpf = body.cpf;

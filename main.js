@@ -57,8 +57,11 @@ function main () {
     event.sender.send('signup-check', response);
   })
 
-  ipcMain.on('login-finish', (event, response) => {
-    mainWindow.loadFile(path.join('renderer', 'patient-home.html'));
+  ipcMain.on('login-finish', (event, code) => {
+    if(code == 200)
+      mainWindow.loadFile(path.join(__dirname, '/renderer/patient-home.html'));
+    else
+      mainWindow.send('login-failed');
   })
 
   // add-todo from add todo window
