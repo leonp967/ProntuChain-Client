@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const { app, ipcMain } = require('electron')
+const { app, ipcMain, dialog } = require('electron')
 
 const Window = require('./Window')
 const DataStore = require('./DataStore')
@@ -12,7 +12,9 @@ require('electron-reload')(__dirname)
 const todosData = new DataStore({ name: 'Todos Main' })
 
 function main () {
-  
+  global.userEmail = null;
+  global.userCpf = null;
+  global.userName = null;
   // todo list window
   let mainWindow = new Window({
     file: path.join('renderer', 'index.html')
@@ -57,11 +59,26 @@ function main () {
     event.sender.send('signup-check', response);
   })
 
-  ipcMain.on('login-finish', (event, code) => {
-    if(code == 200)
+  ipcMain.on('login-finish', (event, code, email, name, cpf) => {
+    if(code == 200){
+      global.userEmail = email;
+      global.userName = name;
+      global.userCpf = cpf;
       mainWindow.loadFile(path.join(__dirname, '/renderer/patient-home.html'));
-    else
-      mainWindow.send('login-failed');
+    }
+    else{
+      const options = {
+        type: 'error',
+        buttons: ['OK'],
+        title: 'Erro',
+        message: 'Email ou senha inválidos!'
+      };
+      dialog.showMessageBox(null, options);
+    }
+  })
+
+  ipcMain.on('query-finish', (event, response) => {
+    mainWindow.send('query', response);
   })
 
   // add-todo from add todo window

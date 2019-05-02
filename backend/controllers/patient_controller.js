@@ -8,13 +8,12 @@ const decryptAES = require('../utils/crypto_utils').decryptAES
 const path = require("path");
 const homedir = require('os').homedir();
 const UserController = require('./user_controller');
+const { ipcRenderer } = require('electron');
 
-exports.queryResult = async function(type, dateFrom, dateTo){
+exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
     try{
         const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
         const gateway = new Gateway();
-        var email = UserController.getEmail();
-        var cpf = UserController.getCpf();
 
         let connectionProfile = yaml.load(fs.readFileSync(path.join(__dirname, '../prontuchain-connection/config.yaml'), 'utf8'));
 
@@ -34,7 +33,7 @@ exports.queryResult = async function(type, dateFrom, dateTo){
         // let chave = decryptRSA(chaveCriptografada, path.join(homedir, 'prontuchain-keys/private.pem'), 'senha');
         // let stringDados = decryptAES(record.getDados(), chave);
         // let dados = RecordData.deserialize(stringDados);
-        return response;
+        ipcRenderer.send('query-finish', response);
     } catch(error){
         console.log(`Error processing transaction. ${error}`);
     }

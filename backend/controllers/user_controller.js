@@ -4,22 +4,6 @@ const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
 const path = require("path");
 const homedir = require('os').homedir();
 
-var userEmail = null;
-var userName = null;
-var userCpf = null;
-
-exports.getEmail = function(){
-  return userEmail;
-}
-
-exports.getName = function(){
-  return userName;
-}
-
-exports.getCpf = function(){
-  return userCpf;
-}
-
 function importToWallet(certificate, key, email){
   const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
   const identity = X509WalletMixin.createIdentity('Org1MSP', certificate, key);
@@ -58,11 +42,7 @@ exports.userLogin = (email, password) => {
       if(error) {
           return console.dir(error);
       }
-      if(response.statusCode == 200){
-        userEmail = body.email;
-        userName = body.name;
-        userCpf = body.cpf;
-      }
-      ipcRenderer.send('login-finish', response.statusCode);
+      const bodyJson = JSON.parse(body);
+      ipcRenderer.send('login-finish', response.statusCode, bodyJson.email, bodyJson.name, bodyJson.cpf);
   });
 }
