@@ -25,6 +25,7 @@
     "js-yaml": "^3.12.1",
     "mongoose": "^5.5.1",
     "mongoose-unique-validator": "^2.0.2",
+    "node-rsa": "^1.0.5",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
     "spectre.css": "^0.5.3"

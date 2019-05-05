@@ -10,8 +10,9 @@ const homedir = require('os').homedir();
 const UserController = require('./user_controller');
 const { ipcRenderer } = require('electron');
 
-exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
+exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, password){
     try{
+        const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
         const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
         const gateway = new Gateway();
 
@@ -23,17 +24,34 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
             discovery: { enabled:false, asLocalhost: true }
         };
 
-        await gateway.connect(connectionProfile, connectionOptions);
-        const network = await gateway.getNetwork('prontuchain');
-        const contract = await network.getContract('recordcontract', 'org.prontuchain.MedicalRecord');
-        issueResponse = await contract.submitTransaction('retrieve', cpf, dateFrom, dateTo);
-        var response = issueResponse.toString();
+        gateway.connect(connectionProfile, connectionOptions)
+        .then(() => {
+            gateway.getNetwork('prontuchain')
+            .then((network) => {
+                const contract = network.getContract('recordcontract', 'org.prontuchain.MedicalRecord');
+                contract.submitTransaction('retrieve', cpf, dateFrom, dateTo)
+                .then((issueResponse) => {
+                    let array = JSON.parse(issueResponse);
+                    array = eval(array);
+                    array.forEach((obj) => {
+                        let record = obj.Record;
+                        let keyCrypto = record.cryptedRecord.keyCrypto
+                        let chave = decryptRSA(keyCrypto, pathPrivateKey, password);
+                        let stringDados = decryptAES(record.dataCrypto, chave);
+                        let dados = RecordData.deserialize(stringDados);
+                        ipcRenderer.send('query-finish', dados);
+                    });
+                })
+            })
+        }).catch((error) => {
+            console.log(error);
+        });
+        
         // let record = CryptedRecord.fromBuffer(issueResponse);
         // let chaveCriptografada = record.getChave();
         // let chave = decryptRSA(chaveCriptografada, path.join(homedir, 'prontuchain-keys/private.pem'), 'senha');
         // let stringDados = decryptAES(record.getDados(), chave);
         // let dados = RecordData.deserialize(stringDados);
-        ipcRenderer.send('query-finish', response);
     } catch(error){
         console.log(`Error processing transaction. ${error}`);
     }

@@ -18,6 +18,10 @@ class RecordData {
         return this.texto;
     }
 
+    getTipo(){
+        return this.tipo;
+    }
+
     static getClass() {
         return 'org.prontuchain.RecordData';
     }
