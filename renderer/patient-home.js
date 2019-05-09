@@ -41,8 +41,7 @@ ipcRenderer.on('view-request', (event, request) => {
     };
     remote.dialog.showMessageBox(options, (response) => {
         if(response == 0){
-            options.message = 'Acertô miseravi';
-            remote.dialog.showMessageBox(options);
+            // TODO buscar dados na blockchain e enviar
         }
     });
 })
