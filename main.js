@@ -5,6 +5,8 @@ const { app, ipcMain, dialog } = require('electron')
 
 const Window = require('./Window')
 const DataStore = require('./DataStore')
+require('dotenv').config()
+const Pusher = require('pusher-js')
 
 require('electron-reload')(__dirname)
 
@@ -15,10 +17,30 @@ function main () {
   global.userEmail = null;
   global.userCpf = null;
   global.userName = null;
-  // todo list window
+  let socketId = null;
+
   let mainWindow = new Window({
     file: path.join('renderer', 'index.html')
   })
+
+  var pusher = new Pusher(process.env.PUSHER_APP_KEY, { cluster: process.env.PUSHER_APP_CLUSTER });
+  pusher.connection.bind('connected', function () {
+      // attach the socket ID to all outgoing Axios requests
+      socketId = pusher.connection.socket_id;
+  });
+
+  pusher.subscribe('notifications')
+  .bind('view-permission', function (request) {
+      // var notification = new Notification(post.title + " was just updated. Check it out.");
+      // notification.onclick = function (event) {
+      //     window.location.href = '/posts/' + post._id;
+      //     event.preventDefault();
+      //     notification.close();
+      // }
+      if(request.cpf == global.userCpf){
+        mainWindow.send('view-request', request);
+      }
+  });
 
   // add todo window
   let signupWin
@@ -64,7 +86,10 @@ function main () {
       global.userEmail = email;
       global.userName = name;
       global.userCpf = cpf;
-      mainWindow.loadFile(path.join(__dirname, '/renderer/patient-home.html'));
+      if(cpf.length == 11)
+        mainWindow.loadFile(path.join(__dirname, '/renderer/patient-home.html'));
+      else
+        mainWindow.loadFile(path.join(__dirname, '/renderer/institution-home.html'));
     }
     else{
       const options = {
@@ -77,8 +102,20 @@ function main () {
     }
   })
 
-  ipcMain.on('query-finish', (event, response) => {
-    mainWindow.send('query', response);
+  ipcMain.on('query-finish', (event, results) => {
+    mainWindow.send('query', results);
+  })
+
+  ipcMain.on('view-permission', (event, request) => {
+    let Pusher = require('pusher');
+    let pusherServer = new Pusher({
+        appId: process.env.PUSHER_APP_ID,
+        key: process.env.PUSHER_APP_KEY,
+        secret: process.env.PUSHER_APP_SECRET,
+        cluster: process.env.PUSHER_APP_CLUSTER
+    });
+
+    pusherServer.trigger('notifications', 'view-permission', request, socketId);
   })
 
   // add-todo from add todo window

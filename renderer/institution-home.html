@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <title>Patient Home</title>
+    <title>Institution Home</title>
     <link rel="stylesheet" href="../node_modules/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="style.css">
   </head>
@@ -21,6 +21,11 @@
                 </div>
 
                 <div class="form-inline">
+                    <label class="form-label" for="patient-cpf">CPF</label>
+                    <input type="text" id="patient-cpf" name="patient-cpf">
+                </div>
+
+                <div class="form-inline">
                         <label class="form-label" for="date-from">De</label>
                         <input type="date" id="date-from" name="date-from">
                 </div>
@@ -30,12 +35,12 @@
                         <input type="date" id="date-to" name="date-to">
                 </div>
 
-                <button id="query-btn" class="btn btn-primary">Pesquisar</button>
+                <button id="permission-btn" class="btn btn-primary">Pedir permissão</button>
         </div>
         <div class="divider"></div>
         <div id="results-div"></div>
         </div>
-    <script src="./patient-home.js"></script>
+    <script src="./institution-home.js"></script>
   </body>
 
 </html>

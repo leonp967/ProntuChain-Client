@@ -10,7 +10,7 @@ const homedir = require('os').homedir();
 const UserController = require('./user_controller');
 const { ipcRenderer } = require('electron');
 
-exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, password){
+exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
     try{
         const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
         const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
@@ -32,26 +32,22 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, passwor
                 contract.submitTransaction('retrieve', cpf, dateFrom, dateTo)
                 .then((issueResponse) => {
                     let array = JSON.parse(issueResponse);
+                    let results = [];
                     array = eval(array);
                     array.forEach((obj) => {
                         let record = obj.Record;
                         let keyCrypto = record.cryptedRecord.keyCrypto
-                        let chave = decryptRSA(keyCrypto, pathPrivateKey, password);
-                        let stringDados = decryptAES(record.dataCrypto, chave);
+                        let chave = decryptRSA(keyCrypto, pathPrivateKey);
+                        let stringDados = decryptAES(record.cryptedRecord.dataCrypto, chave);
                         let dados = RecordData.deserialize(stringDados);
-                        ipcRenderer.send('query-finish', dados);
+                        results.push(dados);
                     });
+                    ipcRenderer.send('query-finish', results);
                 })
             })
         }).catch((error) => {
             console.log(error);
         });
-        
-        // let record = CryptedRecord.fromBuffer(issueResponse);
-        // let chaveCriptografada = record.getChave();
-        // let chave = decryptRSA(chaveCriptografada, path.join(homedir, 'prontuchain-keys/private.pem'), 'senha');
-        // let stringDados = decryptAES(record.getDados(), chave);
-        // let dados = RecordData.deserialize(stringDados);
     } catch(error){
         console.log(`Error processing transaction. ${error}`);
     }
