@@ -21,7 +21,7 @@ var encryptAES = function(value, useKey) {
     return iv.toString('hex') + ':' + encrypted.toString('hex');
 }
 
-var decryptAES = function(encrypted, useKey = key) {
+var decryptAES = function(encrypted, useKey) {
     let textParts = encrypted.split(':');
 	let iv = Buffer.from(textParts.shift(), 'hex');
 	let encryptedText = Buffer.from(textParts.join(':'), 'hex');
@@ -38,6 +38,12 @@ var encryptStringWithRsaPublicKey = function(toEncrypt, publicKey) {
     return encrypted.toString("base64");
 };
 
+var decryptStringWithRsaPublicKey = function(toDecrypt, publicKey) {
+    var buffer = Buffer.from(toDecrypt, 'base64');
+    var decrypted = crypto.publicDecrypt(publicKey, buffer);
+    return decrypted.toString("utf8");
+};
+
 var decryptStringWithRsaPrivateKey = function(toDecrypt, relativeOrAbsolutePathtoPrivateKey, senha) {
     var absolutePath = path.resolve(relativeOrAbsolutePathtoPrivateKey);
     var privateKey = fs.readFileSync(absolutePath, "utf8");
@@ -50,9 +56,19 @@ var decryptStringWithRsaPrivateKey = function(toDecrypt, relativeOrAbsolutePatht
     return decrypted.toString("utf8");
 };
 
+var encryptStringWithRsaPrivateKey = function(toEncrypt, relativeOrAbsolutePathtoPrivateKey, senha) {
+    var absolutePath = path.resolve(relativeOrAbsolutePathtoPrivateKey);
+    var privateKey = fs.readFileSync(absolutePath, "utf8");
+    var buffer = Buffer.from(toEncrypt, "utf8");
+    var encrypted = crypto.privateEncrypt(privateKey.toString(), buffer);
+    return encrypted.toString("base64");
+};
+
 module.exports = {
-    encryptStringWithRsaPublicKey: encryptStringWithRsaPublicKey,
-    decryptStringWithRsaPrivateKey: decryptStringWithRsaPrivateKey,
+    encryptRSAPublic: encryptStringWithRsaPublicKey,
+    encryptRSAPrivate: encryptStringWithRsaPrivateKey,
+    decryptRSAPrivate: decryptStringWithRsaPrivateKey,
+    decryptRSAPublic: decryptStringWithRsaPublicKey,
     encryptAES: encryptAES,
     decryptAES: decryptAES,
     generateAESKey: generateAESKey

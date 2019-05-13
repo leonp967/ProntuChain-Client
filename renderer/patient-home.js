@@ -10,7 +10,7 @@ document.getElementById('query-btn').addEventListener('click', () => {
     var dateTo = document.getElementById('date-to').value;
     var email = remote.getGlobal('userEmail');
     var cpf = remote.getGlobal('userCpf');
-    PatientController.queryResult(email, cpf, type, dateFrom, dateTo);
+    PatientController.queryResult(email, cpf, type, dateFrom, dateTo, true);
 });
 
 ipcRenderer.on('query', (event, results) => {
@@ -31,6 +31,11 @@ ipcRenderer.on('query', (event, results) => {
     resultsDiv.innerHTML = resultsHtml;
 })
 
+ipcRenderer.on('query-permission', (event, results) => {
+    var dataToSend = PatientController.encryptPatientData(results, remote.getGlobal('userEmail'), remote.getGlobal('userName'), remote.getGlobal('senderEmail'));
+    ipcRenderer.send('send-data', dataToSend);
+})
+
 ipcRenderer.on('view-request', (event, request) => {
     const options = {
         type: 'info',
@@ -41,7 +46,9 @@ ipcRenderer.on('view-request', (event, request) => {
     };
     remote.dialog.showMessageBox(options, (response) => {
         if(response == 0){
-            // TODO buscar dados na blockchain e enviar
+            var email = remote.getGlobal('userEmail');
+            var cpf = remote.getGlobal('userCpf');
+            PatientController.queryResult(email, cpf, request.type, request.from, request.to, false);
         }
     });
 })

@@ -17,6 +17,7 @@ function main () {
   global.userEmail = null;
   global.userCpf = null;
   global.userName = null;
+  global.senderEmail = null;
   let socketId = null;
 
   let mainWindow = new Window({
@@ -25,12 +26,11 @@ function main () {
 
   var pusher = new Pusher(process.env.PUSHER_APP_KEY, { cluster: process.env.PUSHER_APP_CLUSTER });
   pusher.connection.bind('connected', function () {
-      // attach the socket ID to all outgoing Axios requests
       socketId = pusher.connection.socket_id;
   });
 
-  pusher.subscribe('notifications')
-  .bind('view-permission', function (request) {
+  var channel = pusher.subscribe('notifications');
+  channel.bind('view-permission', function (request) {
       // var notification = new Notification(post.title + " was just updated. Check it out.");
       // notification.onclick = function (event) {
       //     window.location.href = '/posts/' + post._id;
@@ -38,8 +38,14 @@ function main () {
       //     notification.close();
       // }
       if(request.cpf == global.userCpf){
+        global.senderEmail = request.senderEmail;
         mainWindow.send('view-request', request);
       }
+  });
+
+  channel.bind('patient-data', function (data) {
+    if(global.userCpf.length > 11 && data.receiverEmail == global.userEmail)
+      mainWindow.send('show-data', data);
   });
 
   // add todo window
@@ -102,8 +108,11 @@ function main () {
     }
   })
 
-  ipcMain.on('query-finish', (event, results) => {
-    mainWindow.send('query', results);
+  ipcMain.on('query-finish', (event, results, showResults) => {
+    if(showResults)
+      mainWindow.send('query', results);
+    else
+      mainWindow.send('query-permission', results);
   })
 
   ipcMain.on('view-permission', (event, request) => {
@@ -116,6 +125,18 @@ function main () {
     });
 
     pusherServer.trigger('notifications', 'view-permission', request, socketId);
+  })
+
+  ipcMain.on('send-data', (event, data) => {
+    let Pusher = require('pusher');
+    let pusherServer = new Pusher({
+        appId: process.env.PUSHER_APP_ID,
+        key: process.env.PUSHER_APP_KEY,
+        secret: process.env.PUSHER_APP_SECRET,
+        cluster: process.env.PUSHER_APP_CLUSTER
+    });
+
+    pusherServer.trigger('notifications', 'patient-data', data, socketId);
   })
 
   // add-todo from add todo window

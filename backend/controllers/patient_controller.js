@@ -3,14 +3,16 @@ const yaml = require('js-yaml');
 const { FileSystemWallet, Gateway } = require('fabric-network');
 const CryptedRecord = require('../models/crypted_record');
 const RecordData = require('../models/record_data');
-const decryptRSA = require('../utils/crypto_utils').decryptStringWithRsaPrivateKey
-const decryptAES = require('../utils/crypto_utils').decryptAES
+const decryptRSAPrivate = require('../utils/crypto_utils').decryptRSAPrivate;
+const encryptRSAPrivate = require('../utils/crypto_utils').encryptRSAPrivate;
+const decryptAES = require('../utils/crypto_utils').decryptAES;
+const encryptAES = require('../utils/crypto_utils').encryptAES;
+const generateKey = require('../utils/crypto_utils').generateAESKey;
 const path = require("path");
 const homedir = require('os').homedir();
-const UserController = require('./user_controller');
 const { ipcRenderer } = require('electron');
 
-exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
+exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, showResults){
     try{
         const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
         const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
@@ -37,12 +39,12 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
                     array.forEach((obj) => {
                         let record = obj.Record;
                         let keyCrypto = record.cryptedRecord.keyCrypto
-                        let chave = decryptRSA(keyCrypto, pathPrivateKey);
+                        let chave = decryptRSAPrivate(keyCrypto, pathPrivateKey);
                         let stringDados = decryptAES(record.cryptedRecord.dataCrypto, chave);
                         let dados = RecordData.deserialize(stringDados);
                         results.push(dados);
                     });
-                    ipcRenderer.send('query-finish', results);
+                    ipcRenderer.send('query-finish', results, showResults);
                 })
             })
         }).catch((error) => {
@@ -51,4 +53,20 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo){
     } catch(error){
         console.log(`Error processing transaction. ${error}`);
     }
+}
+
+exports.encryptPatientData = function(results, email, name, senderEmail){
+    const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
+    let key = generateKey();
+    let keyCrypto = encryptRSAPrivate(key, pathPrivateKey, 'senha');
+    let dataString = JSON.stringify(results);
+    let dataCrypto = encryptAES(dataString, key);
+    let dataToSend = {
+        keyCrypto: keyCrypto,
+        dataCrypto: dataCrypto,
+        patientName: name,
+        patientEmail: email,
+        receiverEmail: senderEmail
+    }
+    return dataToSend;
 }
