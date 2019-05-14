@@ -16,11 +16,9 @@ ipcRenderer.on('signup-check', (event, response) => {
 })
 
 document.getElementById('confirm-button').addEventListener('click', async(evt) => {
-    // prevent default refresh functionality of forms
     evt.preventDefault();
   
     const form = document.getElementById('signupForm');
-    // input on the form
     const email = form[0].value;
     const cpf = form[1].value;
     const nome = form[2].value;

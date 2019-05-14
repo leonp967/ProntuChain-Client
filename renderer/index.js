@@ -20,23 +20,3 @@ document.getElementById('login-button').addEventListener('click', async(evt) => 
 document.getElementById('signup-button').addEventListener('click', () => {
   ipcRenderer.send('signup');
 });
-
-// on receive todos
-//ipcRenderer.on('todos', (event, todos) => {
-  // // get the todoList ul
-  // const todoList = document.getElementById('todoList')
-  // // create html string
-  // const todoItems = todos.reduce((html, todo) => {
-  //   html += `<li class="todo-item">${todo}</li>`
-
-  //   return html
-  // }, '')
-
-  // // set list html to the todo items
-  // todoList.innerHTML = todoItems
-
-  // // add click handlers to delete the clicked todo
-  // todoList.querySelectorAll('.todo-item').forEach(item => {
-  //   item.addEventListener('click', deleteTodo)
-  // })
-//})

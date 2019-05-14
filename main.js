@@ -48,39 +48,33 @@ function main () {
       mainWindow.send('show-data', data);
   });
 
-  // add todo window
-  let signupWin
-
   // TODO: put these events into their own file
 
   // initialize with todos
-  mainWindow.once('show', () => {
-    mainWindow.webContents.send('todos', todosData.todos)
-  })
+  // mainWindow.once('show', () => {
+  //   mainWindow.webContents.send('todos', todosData.todos)
+  // })
 
-  // create add todo window
+  let signupWin;
+
   ipcMain.on('signup', () => {
-    // if addTodoWin does not already exist
-    if (!signupWin) {
-      // create a new add todo window
-      signupWin = new Window({
+    signupWin = new Window({
         file: path.join('renderer', 'signup.html'),
         width: 400,
         height: 400,
-        // close with the main window
         parent: mainWindow
       })
 
-      // cleanup
       signupWin.on('closed', () => {
         signupWin = null
       })
-    }
   })
 
   ipcMain.on('signup-ok', () => {
-    signupWin.close();
-    signupWin = null;
+    if(signupWin){
+      signupWin.close();
+      signupWin = null;
+    }
   })
 
   ipcMain.on('signup-finish', (event, response) => {
@@ -137,6 +131,35 @@ function main () {
     });
 
     pusherServer.trigger('notifications', 'patient-data', data, socketId);
+  })
+
+  let createWin;
+
+  ipcMain.on('create', () => {
+    createWin = new Window({
+      file: path.join('renderer', 'include-data.html'),
+      width: 500,
+      height: 500,
+      parent: mainWindow
+    })
+
+    createWin.on('closed', () => {
+      createWin = null
+    })
+  })
+
+  ipcMain.on('create-finish', () => {
+    if(createWin){
+      createWin.close();
+      createWin = null;
+      const options = {
+        type: 'info',
+        buttons: ['OK'],
+        title: 'Aviso',
+        message: 'Inclusão realizada com sucesso!'
+      };
+      dialog.showMessageBox(null, options);
+    }
   })
 
   // add-todo from add todo window

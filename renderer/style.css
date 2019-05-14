@@ -21,4 +21,5 @@ body {
 .form-inline{
   margin-inline-end: 15px;
   margin-inline-start: 10px;
+  margin-top: 10px;
 }

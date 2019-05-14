@@ -3,6 +3,8 @@
 const { ipcRenderer } = require('electron');
 const remote = require('electron').remote;
 const PatientController = require('../backend/controllers/patient_controller');
+const dateFormat = require('dateformat');
+const TypeEnum = require('../backend/models/types_enum').TypeEnum;
 
 document.getElementById('query-btn').addEventListener('click', () => {
     var type = document.getElementById('picker-type').value;
@@ -18,8 +20,8 @@ ipcRenderer.on('query', (event, results) => {
     const resultsHtml = results.reduce((html, result) => {
         html += '<div class="row">'
         html += '<div class="columns">'
-        html += `<div class="column col-6"><h5>Tipo: ${result.tipo}</h5></div>`
-        html += `<div class="column col-6"><div class="text-right"><h5>Data: ${result.data}</h5></div></div></br>`
+        html += `<div class="column col-6"><h5>Tipo: ${TypeEnum.get(parseInt(result.tipo))}</h5></div>`
+        html += `<div class="column col-6"><div class="text-right"><h5>Data: ${dateFormat(result.data, 'dd/mm/yyyy')}</h5></div></div></br>`
         html += '<div class="column col-6"><h5>Descrição: </h5></div></br>'
         html += '</div>'
         html += `<div class="mx-2"><div class="text-left">${result.texto}</div></div></br>`
