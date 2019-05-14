@@ -1,6 +1,4 @@
-const { ipcRenderer } = require('electron');
 const remote = require('electron').remote;
-const dialog = remote.dialog;
 const InstitutionController = require('../backend/controllers/institution_controller');
 
 document.getElementById('create-btn').addEventListener('click', (evt) => {
