@@ -7,6 +7,7 @@ const dateFormat = require('dateformat');
 const TypeEnum = require('../backend/models/types_enum').TypeEnum;
 
 document.getElementById('query-btn').addEventListener('click', () => {
+    document.getElementById('loading').style.display = "block";
     var type = document.getElementById('picker-type').value;
     var dateFrom = document.getElementById('date-from').value;
     var dateTo = document.getElementById('date-to').value;
@@ -30,6 +31,7 @@ ipcRenderer.on('query', (event, results) => {
         return html;
     }, '')
 
+    document.getElementById('loading').style.display = "none";
     resultsDiv.innerHTML = resultsHtml;
 })
 

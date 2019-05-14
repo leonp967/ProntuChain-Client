@@ -10,7 +10,8 @@ const deleteTodo = (e) => {
 };
 
 document.getElementById('login-button').addEventListener('click', async(evt) => {
-    evt.preventDefault();  
+    evt.preventDefault();
+    document.getElementById('loading').style.display = "block";
     const form = document.getElementById('loginForm');
     const email = form[0].value;
     const senha = form[1].value;

@@ -3,6 +3,7 @@ const InstitutionController = require('../backend/controllers/institution_contro
 
 document.getElementById('create-btn').addEventListener('click', (evt) => {
     evt.preventDefault();
+    document.getElementById('loading').style.display = "block";
     let cpf = document.getElementById('cpf').value;
     let patientEmail = document.getElementById('email').value;
     let date = document.getElementById('date').value;

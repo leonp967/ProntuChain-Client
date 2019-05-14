@@ -39,6 +39,7 @@ function showResults(results){
         return html;
     }, '')
 
+    document.getElementById('loading').style.display = "none";
     resultsDiv.innerHTML = resultsHtml;
 }
 
@@ -52,6 +53,7 @@ ipcRenderer.on('show-data', (event, data) => {
     };
     remote.dialog.showMessageBox(options, (response) => {
         if(response == 0){
+            document.getElementById('loading').style.display = "block";
             let results = InstitutionController.decryptPatientData(data);
             showResults(results);
         }
