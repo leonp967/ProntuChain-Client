@@ -5,6 +5,7 @@ const path = require("path");
 const homedir = require('os').homedir();
 const NodeRSA = require('node-rsa');
 const fs = require('fs');
+const authServerUrl = 'https://prontuchain-auth-server.herokuapp.com'
 
 function importToWallet(certificate, key, email){
   const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
@@ -37,7 +38,7 @@ function generateKeys(email, password){
 exports.createUser = (email, password, cpf, nome) => {
   Request.post({
     "headers": { "content-type": "application/json" },
-    "url": "http://localhost:3000/signup",
+    "url": authServerUrl + "/signup",
     "body": JSON.stringify({
         "email": email,
         "password": password,
@@ -59,7 +60,7 @@ exports.createUser = (email, password, cpf, nome) => {
 exports.userLogin = (email, password) => {
   Request.post({
     "headers": { "content-type": "application/json" },
-    "url": "http://localhost:3000/login",
+    "url": authServerUrl + "/login",
     "body": JSON.stringify({
         "email": email,
         "password": password
