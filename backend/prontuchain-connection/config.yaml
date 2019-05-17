@@ -38,7 +38,7 @@ organizations:
     certificateAuthorities:
       - ca.example.com
     adminPrivateKey:
-      path: backend/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/05bd832ff08bd1e3a6a7de88d5c0947f247f130cd37811012674293bb06ba3c3_sk
+      path: backend/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/f255d55dd9d3f69518dd0862699de6cd9f9d45f56279c6d450344913305834f5_sk
     signedCert:
       path: backend/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
 
@@ -50,13 +50,13 @@ organizations:
     certificateAuthorities:
       - ca.example.com
     adminPrivateKey:
-      path: backend/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/10568c65515daeedce40ab489726e8cdba32032600c7bd78ec273974774a5044_sk
+      path: backend/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/23c7369e68168ddd91a4d1522f1f6e490f1ccde15cba5cb72663c16890eb02b6_sk
     signedCert:
       path: backend/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
 
 orderers:
   orderer.example.com:
-    url: grpcs://localhost:7050
+    url: grpcs://serveo.net:7050
     grpcOptions:
       ssl-target-name-override: orderer.example.com
     tlsCACerts:
@@ -64,7 +64,7 @@ orderers:
 
 peers:
   peer0.org1.example.com:
-    url: grpcs://localhost:7051
+    url: grpcs://serveo.net:7051
     grpcOptions:
       ssl-target-name-override: peer0.org1.example.com
       request-timeout: 120001
@@ -98,7 +98,7 @@ peers:
   certificateAuthorities:
     ca.example.com:
 
-      url: http://localhost:7054
+      url: http://serveo.net:7054
 
       httpOptions:
         verify: false

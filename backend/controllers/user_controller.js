@@ -13,7 +13,7 @@ function importToWallet(certificate, key, email){
   return wallet.import(email, identity);
 }
 
-function generateKeys(email, password){
+function generateKeys(email, response){
   const key = new NodeRSA();
   key.generateKeyPair();
   let publicKey = key.exportKey('pkcs8-public');
@@ -52,7 +52,7 @@ exports.createUser = (email, password, cpf, nome) => {
       const bodyJson = JSON.parse(body);
       importToWallet(bodyJson.certificate, bodyJson.key, email)
       .then(() => {
-        generateKeys(email, password);
+        generateKeys(email, response);
       })
   });
 }
