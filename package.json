@@ -1,17 +1,23 @@
 {
   "name": "prontuchain-client",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Aplicação cliente da Prontuchain",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "make": "electron-forge make"
   },
-  "repository": "https://github.com/CodeDraken/electron-todo",
+  "repository": "https://github.com/leonp967/ProntuChain-Client",
   "keywords": [],
-  "author": "CodeDraken",
+  "author": "leonp967",
   "license": "MIT",
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.33",
+    "@electron-forge/maker-deb": "^6.0.0-beta.39",
+    "@electron-forge/maker-dmg": "^6.0.0-beta.39",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.39",
     "devtron": "^1.4.0",
+    "electron": "^4.2.2",
     "electron-rebuild": "^1.8.4",
     "standard": "^12.0.1"
   },
@@ -19,14 +25,13 @@
     "bcrypt": "^3.0.5",
     "dateformat": "^3.0.3",
     "dotenv": "^8.0.0",
-    "electron": "^4.2.2",
     "electron-reload": "^1.2.5",
     "electron-store": "^2.0.0",
     "enum": "^2.5.0",
     "fabric-client": "~1.4.0",
     "fabric-network": "~1.4.0",
     "js-yaml": "^3.12.1",
-    "mongoose": "^5.5.9",
+    "mongoose": "^5.5.11",
     "mongoose-unique-validator": "^2.0.3",
     "node-rsa": "^1.0.5",
     "pusher": "^2.2.0",
@@ -34,5 +39,21 @@
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
     "spectre.css": "^0.5.3"
+  },
+    "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-deb"
+        },
+        {
+          "name": "@electron-forge/maker-dmg"
+        },
+        {
+          "name": "@electron-forge/maker-squirrel"
+        }
+      ]
+    }
   }
 }

@@ -4,14 +4,11 @@ const path = require('path')
 const { app, ipcMain, dialog } = require('electron')
 
 const Window = require('./Window')
-const DataStore = require('./DataStore')
-require('dotenv').config()
 const Pusher = require('pusher-js')
-
-require('electron-reload')(__dirname)
-
-// create a new todo store name "Todos Main"
-const todosData = new DataStore({ name: 'Todos Main' })
+const PUSHER_APP_ID = 778664
+const PUSHER_APP_KEY = '788ef446a7568b9f660d'
+const PUSHER_APP_SECRET = '9ba578381ef2ab0460cd'
+const PUSHER_APP_CLUSTER= 'us2'
 
 function main () {
   global.userEmail = null;
@@ -21,22 +18,16 @@ function main () {
   let socketId = null;
 
   let mainWindow = new Window({
-    file: path.join('renderer', 'index.html')
+    file: path.join(app.getAppPath(), 'renderer', 'index.html')
   })
 
-  var pusher = new Pusher(process.env.PUSHER_APP_KEY, { cluster: process.env.PUSHER_APP_CLUSTER });
+  var pusher = new Pusher(PUSHER_APP_KEY, { cluster: PUSHER_APP_CLUSTER });
   pusher.connection.bind('connected', function () {
       socketId = pusher.connection.socket_id;
   });
 
   var channel = pusher.subscribe('notifications');
   channel.bind('view-permission', function (request) {
-      // var notification = new Notification(post.title + " was just updated. Check it out.");
-      // notification.onclick = function (event) {
-      //     window.location.href = '/posts/' + post._id;
-      //     event.preventDefault();
-      //     notification.close();
-      // }
       if(request.cpf == global.userCpf){
         global.senderEmail = request.senderEmail;
         mainWindow.send('view-request', request);
@@ -48,18 +39,11 @@ function main () {
       mainWindow.send('show-data', data);
   });
 
-  // TODO: put these events into their own file
-
-  // initialize with todos
-  // mainWindow.once('show', () => {
-  //   mainWindow.webContents.send('todos', todosData.todos)
-  // })
-
   let signupWin;
 
   ipcMain.on('signup', () => {
     signupWin = new Window({
-        file: path.join('renderer', 'signup.html'),
+        file: path.join(app.getAppPath(), 'renderer', 'signup.html'),
         width: 400,
         height: 400,
         parent: mainWindow
@@ -87,9 +71,9 @@ function main () {
       global.userName = name;
       global.userCpf = cpf;
       if(cpf.length == 11)
-        mainWindow.loadFile(path.join(__dirname, '/renderer/patient-home.html'));
+        mainWindow.loadFile(path.join(app.getAppPath(), '/renderer/patient-home.html'));
       else
-        mainWindow.loadFile(path.join(__dirname, '/renderer/institution-home.html'));
+        mainWindow.loadFile(path.join(app.getAppPath(), '/renderer/institution-home.html'));
     }
     else{
       const options = {
@@ -112,10 +96,10 @@ function main () {
   ipcMain.on('view-permission', (event, request) => {
     let Pusher = require('pusher');
     let pusherServer = new Pusher({
-        appId: process.env.PUSHER_APP_ID,
-        key: process.env.PUSHER_APP_KEY,
-        secret: process.env.PUSHER_APP_SECRET,
-        cluster: process.env.PUSHER_APP_CLUSTER
+        appId: PUSHER_APP_ID,
+        key: PUSHER_APP_KEY,
+        secret: PUSHER_APP_SECRET,
+        cluster: PUSHER_APP_CLUSTER
     });
 
     pusherServer.trigger('notifications', 'view-permission', request, socketId);
@@ -124,10 +108,10 @@ function main () {
   ipcMain.on('send-data', (event, data) => {
     let Pusher = require('pusher');
     let pusherServer = new Pusher({
-        appId: process.env.PUSHER_APP_ID,
-        key: process.env.PUSHER_APP_KEY,
-        secret: process.env.PUSHER_APP_SECRET,
-        cluster: process.env.PUSHER_APP_CLUSTER
+        appId: PUSHER_APP_ID,
+        key: PUSHER_APP_KEY,
+        secret: PUSHER_APP_SECRET,
+        cluster: PUSHER_APP_CLUSTER
     });
 
     pusherServer.trigger('notifications', 'patient-data', data, socketId);
@@ -137,7 +121,7 @@ function main () {
 
   ipcMain.on('create', () => {
     createWin = new Window({
-      file: path.join('renderer', 'include-data.html'),
+      file: path.join(app.getAppPath(), 'renderer', 'include-data.html'),
       width: 500,
       height: 500,
       parent: mainWindow
@@ -160,20 +144,6 @@ function main () {
       };
       dialog.showMessageBox(null, options);
     }
-  })
-
-  // add-todo from add todo window
-  ipcMain.on('add-todo', (event, todo) => {
-    const updatedTodos = todosData.addTodo(todo).todos
-
-    mainWindow.send('todos', updatedTodos)
-  })
-
-  // delete-todo from todo list window
-  ipcMain.on('delete-todo', (event, todo) => {
-    const updatedTodos = todosData.deleteTodo(todo).todos
-
-    mainWindow.send('todos', updatedTodos)
   })
 }
 
