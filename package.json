@@ -40,7 +40,7 @@
     "request": "^2.88.0",
     "spectre.css": "^0.5.3"
   },
-    "config": {
+  "config": {
     "forge": {
       "packagerConfig": {},
       "makers": [

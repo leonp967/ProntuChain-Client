@@ -56,7 +56,7 @@ organizations:
 
 orderers:
   orderer.example.com:
-    url: grpcs://serveo.net:7050
+    url: grpcs://35.199.126.237:7050
     grpcOptions:
       ssl-target-name-override: orderer.example.com
     tlsCACerts:
@@ -64,7 +64,7 @@ orderers:
 
 peers:
   peer0.org1.example.com:
-    url: grpcs://serveo.net:7051
+    url: grpcs://35.199.126.237:7051
     grpcOptions:
       ssl-target-name-override: peer0.org1.example.com
       request-timeout: 120001
@@ -72,7 +72,7 @@ peers:
       path: backend/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
 
   peer1.org1.example.com:
-    url: grpcs://localhost:8051
+    url: grpcs://35.199.126.237:8051
     grpcOptions:
       ssl-target-name-override: peer1.org1.example.com
       request-timeout: 120001
@@ -80,7 +80,7 @@ peers:
       path: backend/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
 
   peer0.org2.example.com:
-    url: grpcs://localhost:9051
+    url: grpcs://35.199.126.237:9051
     grpcOptions:
       ssl-target-name-override: peer0.org2.example.com
       request-timeout: 120001
@@ -88,7 +88,7 @@ peers:
       path: backend/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
 
   peer1.org2.example.com:
-    url: grpcs://localhost:10051
+    url: grpcs://35.199.126.237:10051
     grpcOptions:
       ssl-target-name-override: peer1.org2.example.com
       request-timeout: 120001
@@ -98,7 +98,7 @@ peers:
   certificateAuthorities:
     ca.example.com:
 
-      url: http://serveo.net:7054
+      url: http://35.199.126.237:7054
 
       httpOptions:
         verify: false
