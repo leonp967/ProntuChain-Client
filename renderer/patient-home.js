@@ -12,7 +12,7 @@ document.getElementById('query-btn').addEventListener('click', () => {
     var dateFrom = document.getElementById('date-from').value;
     var dateTo = document.getElementById('date-to').value;
     var email = remote.getGlobal('userEmail');
-    var cpf = remote.getGlobal('userCpf');
+    var cpf = remote.getGlobal('userDocument');
     PatientController.queryResult(email, cpf, type, dateFrom, dateTo, true);
 });
 
@@ -51,8 +51,12 @@ ipcRenderer.on('view-request', (event, request) => {
     remote.dialog.showMessageBox(options, (response) => {
         if(response == 0){
             var email = remote.getGlobal('userEmail');
-            var cpf = remote.getGlobal('userCpf');
+            var cpf = remote.getGlobal('userDocument');
             PatientController.queryResult(email, cpf, request.type, request.from, request.to, false);
         }
     });
+})
+
+ipcRenderer.on('stop-loading', () => {
+    document.getElementById('loading').style.display = "none";
 })

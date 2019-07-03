@@ -59,3 +59,7 @@ ipcRenderer.on('show-data', (event, data) => {
         }
     });
 })
+
+ipcRenderer.on('stop-loading', () => {
+    document.getElementById('loading').style.display = "none";
+})

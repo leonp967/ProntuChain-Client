@@ -12,7 +12,7 @@ const PUSHER_APP_CLUSTER= 'us2'
 
 function main () {
   global.userEmail = null;
-  global.userCpf = null;
+  global.userDocument = null;
   global.userName = null;
   global.senderEmail = null;
   let socketId = null;
@@ -28,14 +28,14 @@ function main () {
 
   var channel = pusher.subscribe('notifications');
   channel.bind('view-permission', function (request) {
-      if(request.cpf == global.userCpf){
+      if(request.cpf == global.userDocument){
         global.senderEmail = request.senderEmail;
         mainWindow.send('view-request', request);
       }
   });
 
   channel.bind('patient-data', function (data) {
-    if(global.userCpf.length > 11 && data.receiverEmail == global.userEmail)
+    if(global.userDocument.length > 11 && data.receiverEmail == global.userEmail)
       mainWindow.send('show-data', data);
   });
 
@@ -65,12 +65,12 @@ function main () {
     event.sender.send('signup-check', response);
   })
 
-  ipcMain.on('login-finish', (event, code, email, name, cpf) => {
+  ipcMain.on('login-finish', (event, code, email, name, userDocument) => {
     if(code == 200){
       global.userEmail = email;
       global.userName = name;
-      global.userCpf = cpf;
-      if(cpf.length == 11)
+      global.userDocument = userDocument;
+      if(userDocument.length == 11)
         mainWindow.loadFile(path.join(app.getAppPath(), '/renderer/patient-home.html'));
       else
         mainWindow.loadFile(path.join(app.getAppPath(), '/renderer/institution-home.html'));
@@ -83,6 +83,7 @@ function main () {
         message: 'Email ou senha inválidos!'
       };
       dialog.showMessageBox(null, options);
+      event.sender.send('stop-loading');
     }
   })
 
@@ -144,6 +145,23 @@ function main () {
       };
       dialog.showMessageBox(null, options);
     }
+  })
+
+  ipcMain.on('error', (event, context, statusCode) => {
+    let message;
+    if(statusCode == 400 && context == 'cadastro')
+      message = 'Já existe um usuário cadastrado com o mesmo e-mail ou número de documento!';
+    else
+      message = `Erro inesperado no processo de ${context}`;
+    
+    const options = {
+      type: 'error',
+      buttons: ['OK'],
+      title: 'Erro',
+      message: message
+    };
+    dialog.showMessageBox(null, options);
+    event.sender.send('stop-loading');
   })
 }
 

@@ -8,15 +8,20 @@ const yaml = require('js-yaml');
 const { FileSystemWallet, Gateway } = require('fabric-network');
 
 exports.decryptPatientData = function(data){
-    const pathPublicKey = path.join(homedir, "/prontuchain/keys", data.patientEmail, "/public.pem");
-    let publicKey = fs.readFileSync(pathPublicKey, 'utf8');
-    let key = decryptRSAPublic(data.keyCrypto, publicKey);
-    let dataArray = decryptAES(data.dataCrypto, key);
-    return eval(dataArray);
+    try {
+        const pathPublicKey = path.join(homedir, "/prontuchain/keys", data.patientEmail, "/public.pem");
+        let publicKey = fs.readFileSync(pathPublicKey, 'utf8');
+        let key = decryptRSAPublic(data.keyCrypto, publicKey);
+        let dataArray = decryptAES(data.dataCrypto, key);
+        return eval(dataArray);
+    } catch (error) {
+        console.dir(error);
+        return ipcRenderer.send('error', 'decriptação', 500);
+    }
 }
 
 exports.includeData = async function(email, patientEmail, cpf, type, date, description){
-    try{
+    try {
         const pathPublicKey = path.join(homedir, "/prontuchain/keys", patientEmail, "/public.pem");
         let publicKey = fs.readFileSync(pathPublicKey, 'utf8');
         const wallet = new FileSystemWallet(path.join(homedir, 'prontuchain/wallet'));
@@ -40,10 +45,9 @@ exports.includeData = async function(email, patientEmail, cpf, type, date, descr
                     ipcRenderer.send('create-finish');
                 })
             })
-        }).catch((error) => {
-            console.log(error);
         });
     } catch(error){
-        console.log(`Error processing transaction. ${error}`);
+        console.dir(error);
+        return ipcRenderer.send('error', 'inclusão', 500);
     }
 }

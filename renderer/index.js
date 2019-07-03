@@ -30,3 +30,7 @@ document.getElementById('login-button').addEventListener('click', async(evt) => 
 document.getElementById('signup-button').addEventListener('click', () => {
   ipcRenderer.send('signup');
 });
+
+ipcRenderer.on('stop-loading', () => {
+  document.getElementById('loading').style.display = "none";
+})

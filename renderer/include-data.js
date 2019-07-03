@@ -1,4 +1,5 @@
 const remote = require('electron').remote;
+const { ipcRenderer } = require('electron');
 const InstitutionController = require('../backend/controllers/institution_controller');
 
 document.getElementById('create-btn').addEventListener('click', (evt) => {
@@ -10,4 +11,8 @@ document.getElementById('create-btn').addEventListener('click', (evt) => {
     let type = document.getElementById('picker-type').value;
     let description = document.getElementById('description').value;
     InstitutionController.includeData(remote.getGlobal('userEmail'), patientEmail, cpf, type, date, description);
+});
+
+ipcRenderer.on('stop-loading', () => {
+    document.getElementById('loading').style.display = "none";
 });

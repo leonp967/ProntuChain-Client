@@ -1,7 +1,6 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const { FileSystemWallet, Gateway } = require('fabric-network');
-const CryptedRecord = require('../models/crypted_record');
 const RecordData = require('../models/record_data');
 const decryptRSAPrivate = require('../utils/crypto_utils').decryptRSAPrivate;
 const encryptRSAPrivate = require('../utils/crypto_utils').encryptRSAPrivate;
@@ -31,7 +30,7 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, showRes
             gateway.getNetwork('prontuchain')
             .then((network) => {
                 const contract = network.getContract('recordcontract', 'org.prontuchain.MedicalRecord');
-                contract.submitTransaction('retrieve', cpf, dateFrom, dateTo)
+                contract.submitTransaction('retrieve', type, cpf, dateFrom, dateTo)
                 .then((issueResponse) => {
                     let array = JSON.parse(issueResponse);
                     let results = [];
@@ -45,28 +44,38 @@ exports.queryResult = async function(email, cpf, type, dateFrom, dateTo, showRes
                         results.push(dados);
                     });
                     ipcRenderer.send('query-finish', results, showResults);
+                }).catch((error) => {
+                    console.dir(error);
+                    ipcRenderer.send('error', 'consulta', 500);
                 })
             })
         }).catch((error) => {
-            console.log(error);
+            console.dir(error);
+            ipcRenderer.send('error', 'consulta', 500);    
         });
     } catch(error){
-        console.log(`Error processing transaction. ${error}`);
+        console.dir(error);
+        ipcRenderer.send('error', 'consulta', 500);
     }
 }
 
 exports.encryptPatientData = function(results, email, name, senderEmail){
-    const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
-    let key = generateKey();
-    let keyCrypto = encryptRSAPrivate(key, pathPrivateKey, 'senha');
-    let dataString = JSON.stringify(results);
-    let dataCrypto = encryptAES(dataString, key);
-    let dataToSend = {
-        keyCrypto: keyCrypto,
-        dataCrypto: dataCrypto,
-        patientName: name,
-        patientEmail: email,
-        receiverEmail: senderEmail
+    try{
+        const pathPrivateKey = path.join(homedir, "/prontuchain/keys", email, "/private.pem");
+        let key = generateKey();
+        let keyCrypto = encryptRSAPrivate(key, pathPrivateKey, 'senha');
+        let dataString = JSON.stringify(results);
+        let dataCrypto = encryptAES(dataString, key);
+        let dataToSend = {
+            keyCrypto: keyCrypto,
+            dataCrypto: dataCrypto,
+            patientName: name,
+            patientEmail: email,
+            receiverEmail: senderEmail
+        }
+        return dataToSend;
+    } catch(error){
+        console.dir(error);
+        return ipcRenderer.send('error', 'encriptação', 500);
     }
-    return dataToSend;
 }
