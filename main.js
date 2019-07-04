@@ -88,6 +88,15 @@ function main () {
   })
 
   ipcMain.on('query-finish', (event, results, showResults) => {
+    if(results.length == 0) {
+      const options = {
+        type: 'info',
+        buttons: ['OK'],
+        title: 'Aviso',
+        message: 'Nenhum registro foi encontrado para os filtros definidos!'
+      };
+      dialog.showMessageBox(null, options);
+    }
     if(showResults)
       mainWindow.send('query', results);
     else
