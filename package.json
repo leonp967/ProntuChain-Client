@@ -31,7 +31,7 @@
     "fabric-client": "~1.4.0",
     "fabric-network": "~1.4.0",
     "js-yaml": "^3.12.1",
-    "mongoose": "^5.5.11",
+    "mongoose": "^5.7.5",
     "mongoose-unique-validator": "^2.0.3",
     "node-rsa": "^1.0.5",
     "pusher": "^2.2.0",
