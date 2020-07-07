@@ -17,7 +17,7 @@
     "@electron-forge/maker-dmg": "^6.0.0-beta.39",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.39",
     "devtron": "^1.4.0",
-    "electron": "^4.2.2",
+    "electron": "^7.2.4",
     "electron-rebuild": "^1.8.4",
     "standard": "^12.0.1"
   },
